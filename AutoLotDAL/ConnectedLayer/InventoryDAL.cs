@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoLotDAL.Models;
 
+using static System.Console;
+
 namespace AutoLotDAL.ConnectedLayer
 {
     public class InventoryDAL
@@ -27,7 +29,7 @@ namespace AutoLotDAL.ConnectedLayer
 
         public void InsertAuto(int id, string color, string make, string petName)
         {
-            string sql = "Insert into Inventory" + "(Make, Color, PetName) Values" + "(@Make, @color, @PetName)";
+            string sql = "Insert into Inventory" + "(Make, Color, PetName) Values" + "(@Make, @Color, @PetName)";
 
             using (SqlCommand command = new SqlCommand(sql, _sqlConnection))
             {
@@ -56,6 +58,7 @@ namespace AutoLotDAL.ConnectedLayer
                     SqlDbType = SqlDbType.Char,
                     Size = 10
                 };
+                command.Parameters.Add(parameter);
                 
                 command.ExecuteNonQuery();
             }
@@ -138,7 +141,7 @@ namespace AutoLotDAL.ConnectedLayer
         {
             string carPetName;
 
-            using(SqlCommand command = new SqlCommand("GetetName", _sqlConnection))
+            using(SqlCommand command = new SqlCommand("GetPetName", _sqlConnection))
             {
                 command.CommandType = CommandType.StoredProcedure;
 
@@ -166,6 +169,53 @@ namespace AutoLotDAL.ConnectedLayer
             }
 
             return carPetName;
+        }
+
+        public void ProcessCreditRisk(bool throwEx, int custID)
+        {
+            string fName;
+            string lName;
+            var cmdSelect = new SqlCommand($"Select * from Customers where CustId = {custID}", _sqlConnection);
+            using (var dataReader = cmdSelect.ExecuteReader())
+            {
+                if(dataReader.HasRows)
+                {
+                    dataReader.Read();
+                    fName = (string)dataReader["FirstName"];
+                    lName = (string)dataReader["LastName"];
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            var cmdRemove = new SqlCommand($"Delete from Customers where CustId = {custID}", _sqlConnection);
+            var cmdInsert = new SqlCommand($"Insert Into CreditRisks" + $"(FirstName, LastName) Values ('{fName}','{lName}')", _sqlConnection);
+
+            SqlTransaction tx = null;
+            try
+            {
+                tx = _sqlConnection.BeginTransaction();
+                cmdInsert.Transaction = tx;
+                cmdRemove.Transaction = tx;
+
+                cmdInsert.ExecuteNonQuery();
+                cmdRemove.ExecuteNonQuery();
+
+                if(throwEx)
+                {
+                    throw new Exception("Sorry! Database error! Tc failed...");
+                }
+
+                tx.Commit();
+            }
+            catch(Exception ex)
+            {
+
+                WriteLine(ex.Message);
+                tx?.Rollback();
+            }
         }
     }
 
