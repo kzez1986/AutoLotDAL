@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.Data.SqlClient;
+using System.Data;
 
 namespace AutoLotDAL.DisconnectedLayer
 {
@@ -25,6 +26,18 @@ namespace AutoLotDAL.DisconnectedLayer
             adapter = new SqlDataAdapter("Select * From Inventory", _connectionString);
 
             var builder = new SqlCommandBuilder(adapter);
+        }
+
+        public DataTable GetAllInventory()
+        {
+            DataTable inv = new DataTable("Inventory");
+            _adapter.Fill(inv);
+            return inv;
+        }
+
+        public void UpdateInventory(DataTable modifiedTable)
+        {
+            _adapter.Update(modifiedTable);
         }
     }
 }
