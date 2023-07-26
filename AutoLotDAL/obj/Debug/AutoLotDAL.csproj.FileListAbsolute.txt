@@ -4,3 +4,4 @@ C:\Users\kzez1986\Source\Repos\AutoLotDAL\AutoLotDAL\bin\Debug\AutoLotDAL.dll
 C:\Users\kzez1986\Source\Repos\AutoLotDAL\AutoLotDAL\bin\Debug\AutoLotDAL.pdb
 C:\Users\kzez1986\Source\Repos\AutoLotDAL\AutoLotDAL\obj\Debug\AutoLotDAL.dll
 C:\Users\kzez1986\Source\Repos\AutoLotDAL\AutoLotDAL\obj\Debug\AutoLotDAL.pdb
+C:\Users\kzez1986\Source\Repos\AutoLotDAL\AutoLotDAL\bin\Debug\AutoLotDAL.dll.config
